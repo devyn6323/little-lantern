@@ -1,7 +1,14 @@
-function SavedStories({ savedStories, onDeleteStory, onSelectStory }) {
+function SavedStories({ savedStories, savedStorySearch, setSavedStorySearch, onDeleteStory, onSelectStory }) {
   return (
     <section className="card saved-section">
       <h2>Saved Stories</h2>
+      <input
+        type="text"
+        value={savedStorySearch}
+        onChange={(e) => setSavedStorySearch(e.target.value)}
+        placeholder="Search saved stories..."
+        className="search-input"
+        />
 
       {savedStories.length === 0 && (
         <p className="empty-message">No saved stories yet.</p>
@@ -23,9 +30,6 @@ function SavedStories({ savedStories, onDeleteStory, onSelectStory }) {
             <button 
               className="delete-button"
               onClick={() => onDeleteStory(savedStory.id)}
-              onClick={() => {
-              onDeleteStory(savedStory.id);
-}}
             >
               Delete
             </button>

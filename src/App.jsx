@@ -16,6 +16,7 @@ function App() {
   const [customLesson, setCustomLesson] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [savedStorySearch, setSavedStorySearch] = useState("");
 
   const [story, setStory] = useState(null);
   const [savedStories, setSavedStories] = useState([]);
@@ -182,6 +183,22 @@ function App() {
     setSavedMessage("");
   }
 
+  const filteredSavedStories = savedStories.filter((savedStory) => {
+    const searchText = savedStorySearch.toLowerCase(); 
+
+    const title = savedStory.title || "";
+    const storyType = savedStory.storyType || "";
+    const lesson = savedStory.lesson || "";
+    const character = savedStory.character || "";
+
+    return (
+      title.toLowerCase().includes(searchText) ||
+      storyType.toLowerCase().includes(searchText) ||
+      lesson.toLowerCase().includes(searchText) ||
+      character.toLowerCase().includes(searchText)
+    );
+  });
+
   return (
     <main className="app">
       <section className="hero">
@@ -226,7 +243,9 @@ function App() {
       </section>
 
       <SavedStories 
-        savedStories={savedStories}
+        savedStories={filteredSavedStories}
+        savedStorySearch={savedStorySearch}
+        setSavedStorySearch={setSavedStorySearch}
         onDeleteStory={handleDeleteStory}
         onSelectStory={handleSelectSavedStories}
       />
