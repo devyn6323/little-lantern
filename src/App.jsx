@@ -4,6 +4,7 @@ import "./App.css";
 import StoryForm from "./components/StoryForm";
 import StoryPreview from "./components/StoryPreview";
 import SavedStories from "./components/SavedStories";
+import ChildProfiles from "./components/ChildProfiles";
 
 function App() {
   const [childName, setChildName] = useState("");
@@ -21,12 +22,19 @@ function App() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [savedStoriesError, setSavedStoriesError] = useState("");
   const [savedStorySort, setSavedStorySort] = useState("newest");
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [profileName, setProfileName] = useState("");
+  const [profileAgeRange, setProfileAgeRange] = useState("2-3");
+  const [favoriteCharacter, setFavoriteCharacter] = useState("");
+  const [profileNotes, setProfileNotes] = useState("");
 
   const [story, setStory] = useState(null);
   const [savedStories, setSavedStories] = useState([]);
 
   useEffect(() => {
     loadSavedStories();
+    loadProfiles();
   }, []);
 
 
@@ -46,6 +54,21 @@ function App() {
       console.error("Error loading saved stories:", error)
     }
   } 
+
+  async function loadProfiles() {
+    try {
+      const response = await fetch("http://localhost:8080/api/profiles");
+
+      if (!response.ok) {
+        throw new Error("Failed to load profiles.");
+      }
+
+      const data = await response.json(); 
+      setProfiles(data);
+    } catch (error) {
+      console.error("Error loading profiles:", error)
+    }
+  }
 
   async function handleGenerateStory() {
     const finalCharacter = 
@@ -199,6 +222,87 @@ function App() {
     setSavedMessage("");
   }
 
+  async function handleCreateProfile() {
+    if (!profileName.trim()) return; 
+
+    const newProfile = {
+      childName: profileName.trim(),
+      ageRange: profileAgeRange, 
+      favoriteCharacter: favoriteCharacter.trim(), 
+      notes: profileNotes.trim(),
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/api/profiles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProfile),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create profile.");
+      }
+
+      const savedProfile = await response.json();
+
+      setProfiles([...profiles, savedProfile]);
+      setSelectedProfile(savedProfile);
+
+      setProfileName("");
+      setProfileAgeRange("2-3");
+      setFavoriteCharacter("");
+      setProfileNotes("");
+
+      setChildName(savedProfile.childName);
+      setAgeRange(savedProfile.ageRange);
+
+      if (savedProfile.favoriteCharacter) {
+        setCharacter("Custom");
+        setCustomCharacter(savedProfile.favoriteCharacter);
+      }
+    } catch (error) {
+      console.error("Error creating profile:", error);
+    }
+  }
+
+  function handleSelectProfile(profile) {
+    setSelectedProfile(profile);
+
+    setChildName(profile.childName);
+    setAgeRange(profile.ageRange);
+
+    if (profile.favoriteCharacter) {
+      setCharacter("Custom");
+      setCustomCharacter(profile.favoriteCharacter);
+    }
+  }
+
+  async function handleDeleteProfile(profileId) {
+    try {
+      const response = await fetch(`http://localhost:8080/api/profiles/${profileId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete profile.");
+      }
+
+      const updatedProfiles = profiles.filter((profile) => {
+        return profile.id !== profileId;
+      });
+
+      setProfiles(updatedProfiles);
+
+      if (selectedProfile && selectedProfile.id === profileId) {
+        setSelectedProfile(null);
+      }
+    } catch (error) {
+      console.error("Error deleting profile:", error);
+    }
+  }
+
   async function handleUpdateStoryTitle(storyId, newTitle) {
     if (!newTitle.trim()) return;
 
@@ -269,6 +373,9 @@ function App() {
   });
 
   const sortedSavedStories = [...filteredSavedStories].sort((a, b) => {
+    const titleA = a.title || "";
+    const titleB = b.title || "";
+
     if (savedStorySort === "newest") {
       return b.id - a.id; 
     }
@@ -278,7 +385,11 @@ function App() {
     }
 
     if (savedStorySort === "az") {
-      return b.title.localeCompare(a.title);
+      return titleA.localeCompare(titleB);
+    }
+
+    if (savedStorySort === "za") {
+      return titleB.localeCompare(titleA);
     }
 
     return 0;
@@ -293,6 +404,23 @@ function App() {
           Create gentle toddler-safe bedtime and learning stories in seconds.
         </p>
       </section>
+
+      <ChildProfiles
+        profiles={profiles}
+        selectedProfile={selectedProfile}
+        profileName={profileName}
+        setProfileName={setProfileName}
+        profileAgeRange={profileAgeRange}
+        setProfileAgeRange={setProfileAgeRange}
+        favoriteCharacter={favoriteCharacter}
+        setFavoriteCharacter={setFavoriteCharacter}
+        profileNotes={profileNotes}
+        setProfileNotes={setProfileNotes}
+        onCreateProfile={handleCreateProfile}
+        onSelectProfile={handleSelectProfile}
+        onDeleteProfile={handleDeleteProfile}
+      />
+        
 
       <section className="layout">
         <StoryForm
