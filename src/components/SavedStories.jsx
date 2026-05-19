@@ -20,6 +20,15 @@ function SavedStories({
       {savedStoriesError && (
         <p className="empty-message">{savedStoriesError}</p>
       )}
+
+      {savedStorySearch && (
+        <button
+        className="secondar-form-button"
+        onClick={() => setSavedStorySearch("")}
+        >
+          Clear Search
+        </button>
+      )}
       
 
       {savedStories.length === 0 && (
