@@ -227,21 +227,27 @@ function App() {
 
       const savedUpdatedStory = await response.json();
 
-      const updatedStories = savedStories.map((savedStory) => {
-        if (savedStory.id === storyId) {
+      setSavedStories((currentStories) => 
+        currentStories.map((savedStory) => {
+          if (savedStory.id === storyId) {
+            return savedUpdatedStory;
+          }
+          return savedStory; 
+        })
+      );
+
+      setStory((currentStory) => {
+        if (currentStory && currentStory.id === storyId) {
           return savedUpdatedStory;
         }
 
-        return savedStory; 
+        return currentStory;
       });
 
-      setSavedStories(updatedStories);
-
-      if (story && storyId === storyId) {
-        setStory(savedUpdatedStory);
-      }
+      return true;
     } catch (error) {
       console.error("Error updating story title:", error);
+      return false; 
     }
   }
 

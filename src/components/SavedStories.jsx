@@ -54,10 +54,13 @@ const [editedTitle, setEditedTitle] = useState("");
               />
 
               <button
-              onClick={() => {
-                onUpdateStoryTitle(savedStory.id, editedTitle);
-                setEditingStoryTitle(null);
+              onClick={async () => {
+               const updated = await onUpdateStoryTitle(savedStory.id, editedTitle);
+
+               if (updated) {
+                setEditingStoryId(null);
                 setEditedTitle("");
+               }
               }}
               >
                 Save Title
