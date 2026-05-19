@@ -20,6 +20,7 @@ function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [savedStoriesError, setSavedStoriesError] = useState("");
+  const [savedStorySort, setSavedStorySort] = useState("newest");
 
   const [story, setStory] = useState(null);
   const [savedStories, setSavedStories] = useState([]);
@@ -267,6 +268,22 @@ function App() {
     );
   });
 
+  const sortedSavedStories = [...filteredSavedStories].sort((a, b) => {
+    if (savedStorySort === "newest") {
+      return b.id - a.id; 
+    }
+
+    if (savedStorySort === "oldest") {
+      return a.id - b.id; 
+    }
+
+    if (savedStorySort === "az") {
+      return b.title.localeCompare(a.title);
+    }
+
+    return 0;
+  });
+
   return (
     <main className="app">
       <section className="hero">
@@ -312,9 +329,11 @@ function App() {
       </section>
 
       <SavedStories 
-        savedStories={filteredSavedStories}
+        savedStories={sortedSavedStories}
         savedStorySearch={savedStorySearch}
         setSavedStorySearch={setSavedStorySearch}
+        savedStorySort={savedStorySort}
+        setSavedStorySort={setSavedStorySort}
         isDeleting={isDeleting}
         savedStoriesError={savedStoriesError}
         onDeleteStory={handleDeleteStory}

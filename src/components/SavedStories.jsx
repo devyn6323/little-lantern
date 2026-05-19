@@ -8,7 +8,9 @@ function SavedStories({
    savedStoriesError,
    onDeleteStory,
    onSelectStory,
-   onUpdateStoryTitle
+   onUpdateStoryTitle,
+   savedStorySort,
+   setSavedStorySort
 }) {
 
 const [editingStoryId, setEditingStoryId] = useState(null);
@@ -24,6 +26,15 @@ const [editedTitle, setEditedTitle] = useState("");
         placeholder="Search saved stories..."
         className="search-input"
         />
+        <select
+          value={savedStorySort}
+          onChange={(e) => setSavedStorySort(e.target.value)}
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="az">Title A-Z</option>
+            <option value="za">Title Z-A</option>
+          </select>
       {savedStoriesError && (
         <p className="empty-message">{savedStoriesError}</p>
       )}
