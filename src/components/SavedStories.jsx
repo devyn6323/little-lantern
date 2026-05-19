@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function SavedStories({
    savedStories,
    savedStorySearch,
@@ -5,8 +7,13 @@ function SavedStories({
    isDeleting,
    savedStoriesError,
    onDeleteStory,
-   onSelectStory
+   onSelectStory,
+   onUpdateStoryTitle
 }) {
+
+const [editingStoryId, setEditingStoryId] = useState(null);
+const [editedTitle, setEditedTitle] = useState("");
+
   return (
     <section className="card saved-section">
       <h2>Saved Stories</h2>
@@ -38,6 +45,34 @@ function SavedStories({
       <div className="saved-grid">
         {savedStories.map((savedStory) => (
           <div className="saved-story" key={savedStory.id}>
+          {editingStoryId === savedStory.id ? (
+            <div>
+              <input
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+              />
+
+              <button
+              onClick={() => {
+                onUpdateStoryTitle(savedStory.id, editedTitle);
+                setEditingStoryTitle(null);
+                setEditedTitle("");
+              }}
+              >
+                Save Title
+              </button>
+
+              <button 
+                onClick={() => {
+                  setEditingStoryId(null);
+                  setEditedTitle("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
             <button
               className="saved-story-button"
               onClick={() => onSelectStory(savedStory)}
@@ -46,6 +81,16 @@ function SavedStories({
               <p>
                 {savedStory.storyType} · {savedStory.lesson}
               </p>
+            </button>
+          )}
+
+            <button
+              onClick={() => {
+                setEditingStoryId(savedStory.id);
+                setEditedTitle(savedStory.title);
+              }}
+              >
+                Edit Title
             </button>
 
             <button 

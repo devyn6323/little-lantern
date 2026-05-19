@@ -198,6 +198,53 @@ function App() {
     setSavedMessage("");
   }
 
+  async function handleUpdateStoryTitle(storyId, newTitle) {
+    if (!newTitle.trim()) return;
+
+    const storyToUpdate = savedStories.find((savedStory) => {
+      return savedStory.id === storyId;
+    });
+
+    if (!storyToUpdate) return; 
+
+    const updatedStory = {
+      ...storyToUpdate, 
+      title: newTitle.trim(),
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/stories/saved/${storyId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStory),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update story title.");
+      }
+
+      const savedUpdatedStory = await response.json();
+
+      const updatedStories = savedStories.map((savedStory) => {
+        if (savedStory.id === storyId) {
+          return savedUpdatedStory;
+        }
+
+        return savedStory; 
+      });
+
+      setSavedStories(updatedStories);
+
+      if (story && storyId === storyId) {
+        setStory(savedUpdatedStory);
+      }
+    } catch (error) {
+      console.error("Error updating story title:", error);
+    }
+  }
+
   const filteredSavedStories = savedStories.filter((savedStory) => {
     const searchText = savedStorySearch.toLowerCase(); 
 
@@ -266,6 +313,7 @@ function App() {
         savedStoriesError={savedStoriesError}
         onDeleteStory={handleDeleteStory}
         onSelectStory={handleSelectSavedStories}
+        onUpdateStoryTitle={handleUpdateStoryTitle}
       />
     </main>
   );
