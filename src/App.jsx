@@ -17,6 +17,9 @@ function App() {
   const [savedMessage, setSavedMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [savedStorySearch, setSavedStorySearch] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [savedStoriesError, setSavedStoriesError] = useState("");
 
   const [story, setStory] = useState(null);
   const [savedStories, setSavedStories] = useState([]);
@@ -28,6 +31,8 @@ function App() {
 
   async function loadSavedStories() {
     try {
+      setSavedStoriesError("");
+
       const response = await fetch("http://localhost:8080/api/stories/saved");
 
       if (!response.ok) {
@@ -103,6 +108,8 @@ function App() {
     }
 
     try {
+      setIsSaving(true);
+
       const response = await fetch("http://localhost:8080/api/stories/saved", {
         method: "POST", 
         headers: {
@@ -126,7 +133,9 @@ function App() {
     } catch (error) {
       console.error("Error saving story:", error);
       setSavedMessage("Could not save story.");
-    } 
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   function handleReadAloud() {
@@ -148,6 +157,9 @@ function App() {
 
   async function handleDeleteStory(storyId) {
     try {
+      setIsDeleting(true);
+      setSavedStoriesError("");
+
       const response = await fetch(`http://localhost:8080/api/stories/saved/${storyId}`, {
         method: "DELETE",
       });
@@ -163,6 +175,9 @@ function App() {
       setSavedStories(updatedStories);
     } catch (error) {
       console.error("Error deleting story:", error)
+      setSavedStoriesError("Could not delete story.");
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -234,6 +249,7 @@ function App() {
         <StoryPreview
           story={story}
           isLoading={isLoading}
+          isSaving={isSaving}
           onReadAloud={handleReadAloud}
           onStopReading={handleStopReading}
           onSaveStory={handleSaveStory}
@@ -246,6 +262,8 @@ function App() {
         savedStories={filteredSavedStories}
         savedStorySearch={savedStorySearch}
         setSavedStorySearch={setSavedStorySearch}
+        isDeleting={isDeleting}
+        savedStoriesError={savedStoriesError}
         onDeleteStory={handleDeleteStory}
         onSelectStory={handleSelectSavedStories}
       />

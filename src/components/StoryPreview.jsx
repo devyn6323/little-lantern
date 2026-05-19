@@ -1,4 +1,13 @@
-function StoryPreview({ story, isLoading, onReadAloud, onStopReading, onSaveStory, onRegenerateStory, savedMessage }) {
+function StoryPreview({ 
+    story,
+    isLoading,
+    isSaving,
+    onReadAloud,
+    onStopReading,
+    onSaveStory,
+    onRegenerateStory,
+    savedMessage
+ }) {
     return (
         <div className="card story-card">
             <h2>Story Preview</h2>
@@ -28,7 +37,9 @@ function StoryPreview({ story, isLoading, onReadAloud, onStopReading, onSaveStor
                     <div className="button-row">
                         <button onClick={onReadAloud}>Read Aloud</button>
                         <button onClick={onStopReading}>Stop Reading</button>
-                        <button onClick={onSaveStory}>Save Story</button>
+                        <button onClick={onSaveStory} disabled={isSaving}>
+                            {isSaving ? "Saving..." : "Save Story"}
+                        </button>
                         <button onClick={onRegenerateStory}>Regenerate</button>
                     </div>
 

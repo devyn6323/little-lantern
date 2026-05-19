@@ -88,6 +88,11 @@ button:hover {
   background: #fdba74;
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .primary-button {
   width: 100%;
   background: #f97316;
