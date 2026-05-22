@@ -11,7 +11,8 @@ function ChildProfiles({
     setProfileNotes,
     onCreateProfile,
     onSelectProfile, 
-    onDeleteProfile
+    onDeleteProfile, 
+    onClearSelectedProfile
 }) {
     return (
         <section className="card profile-section">

@@ -421,6 +421,15 @@ function App() {
         onDeleteProfile={handleDeleteProfile}
       />
         
+      {selectedProfile ? (
+        <p className="save-message">
+          Creating stories for: {selectedProfile.childName}
+        </p>
+      ) : (
+        <p className="empty-message">
+          Create or select a child profile before saving stories. 
+        </p>
+      )}
 
       <section className="layout">
         <StoryForm
